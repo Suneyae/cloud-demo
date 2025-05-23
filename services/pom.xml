@@ -54,6 +54,23 @@ no need to add version number
             <artifactId>lombok</artifactId>
             <scope>annotationProcessor</scope>
         </dependency>
+
+        <!-- 引入swagger,注意：springboot 3.x不兼容 swagger2 ,
+        因为 Spring Boot 3.x 使用了 Jakarta EE 9+，将所有 javax.* 包迁移到了 jakarta.*。
+        因此，推荐使用 Springdoc OpenAPI 作为替代方案
+        步骤:引入springdoc OpenAPI(不需要像引入swagger2那样还要配置类)
+        访问：http://localhost:8080/swagger-ui.html
+
+        必须要加上版本号，否则启动会报错
+         -->
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>2.2.0</version>
+        </dependency>
+
+
+
     </dependencies>
 
 </project>
