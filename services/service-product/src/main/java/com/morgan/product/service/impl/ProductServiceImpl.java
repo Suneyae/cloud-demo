@@ -13,9 +13,11 @@ public class ProductServiceImpl implements ProductService {
     public Product getProductById(Long prodId) {
         Product product = new Product();//alt+enter , by GenerateAllSetter
         product.setId(prodId);
-        product.setPrice(new BigDecimal(0));
-        product.setProductName("苹果"+prodId);
+        product.setPrice(new BigDecimal(4));
+        product.setProductName("Apples"+prodId);
         product.setNum(3);
         return product;
     }
+
+
 }
