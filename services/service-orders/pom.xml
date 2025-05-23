@@ -22,6 +22,14 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
+
+        <!-- 导入model project,里面包含了所有的model, 然后就可以把service-prod和service-orders里的model移除掉了 -->
+        <dependency>
+            <groupId>com.morgan</groupId>
+            <artifactId>model</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+
     </dependencies>
 
 </project>
