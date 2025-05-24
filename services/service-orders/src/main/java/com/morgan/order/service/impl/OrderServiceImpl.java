@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
+import org.springframework.cloud.client.loadbalancer.LoadBalancerClient;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -22,13 +23,17 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     DiscoveryClient discoveryClient;//这是spring cloud自带的服务发现API
 
+    @Autowired
+    LoadBalancerClient loadBalancerClient;//需要引入 spring-cloud-starter-loadbalancer依赖
+
+
 
     @Autowired
     RestTemplate restTemplate;
 
     @Override
     public Order createOrder(Long prodId, Long userId) {
-        Product product = getProductFromRemote(prodId);
+        Product product = getProductFromRemotewithLoadBance(prodId);
         Order order = new Order();
         order.setId(0L);
         //Todo 应该是算出来的
@@ -48,6 +53,23 @@ public class OrderServiceImpl implements OrderService {
         //1. 获取到商品服务所在的所有机器IP+Port
         List<ServiceInstance> instances = discoveryClient.getInstances("service-product");
         ServiceInstance instance = instances.get(0);
+        int port = instance.getPort();
+        //远程URL,sample http://localhost:9000/getProd/3333
+        String url = "http://" + instance.getHost() + ":" +port + "/getProd/"+productId;
+
+        log.info("远程请求:{}",url);
+        log.info("远程请求xx",url);
+        //2. 给远程服务发送请求
+        Product product = restTemplate.getForObject(url, Product.class);
+
+        return product;
+    }
+
+
+    private Product getProductFromRemotewithLoadBance(Long productId){
+        //1. 获取到商品服务所在的所有机器IP+Port
+        ServiceInstance instance = loadBalancerClient.choose("service-product");
+
         int port = instance.getPort();
         //远程URL,sample http://localhost:9000/getProd/3333
         String url = "http://" + instance.getHost() + ":" +port + "/getProd/"+productId;
