@@ -4,6 +4,7 @@ spring:
   cloud:
     nacos:
       server-addr: 127.0.0.1:8848
-
-server:
+      config:
+        import-check:
+          enabled: false #disable spring.config.import=nacos: property to your configuration. 禁用引入配置中心Data Id的检查
   port: 9000 #the web server port will be 9000
