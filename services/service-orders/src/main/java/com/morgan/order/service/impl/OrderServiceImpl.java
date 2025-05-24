@@ -33,7 +33,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Order createOrder(Long prodId, Long userId) {
-        Product product = getProductFromRemotewithLoadBance(prodId);
+        Product product = getProductFromRemoteWithLoadBalanceAnnotation(prodId);
         Order order = new Order();
         order.setId(0L);
         //Todo 应该是算出来的
@@ -66,7 +66,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
 
-    private Product getProductFromRemotewithLoadBance(Long productId){
+    private Product getProductFromRemoteithLoadBance(Long productId){
         //1. 获取到商品服务所在的所有机器IP+Port
         ServiceInstance instance = loadBalancerClient.choose("service-product");
 
@@ -76,6 +76,23 @@ public class OrderServiceImpl implements OrderService {
 
         log.info("远程请求:{}",url);
         log.info("远程请求xx",url);
+        //2. 给远程服务发送请求
+        Product product = restTemplate.getForObject(url, Product.class);
+
+        return product;
+    }
+
+
+    //进阶3，基于注解的负载均衡
+    private Product getProductFromRemoteWithLoadBalanceAnnotation(Long productId){
+        /*
+         * 基于注解的的负载均衡步骤
+         * 1.修改请求url，直接传注册中心里注册的服务名，不需要知道host和端口
+         * 2.RestTemplate的Bean上添加 注解@LoadBalanced，表明RestTemplate 会启用 客户端负载均衡 功能
+         */
+        String url = "http://service-product/getProd/"+productId;
+
+        log.info("getProductFromRemoteWithLoadBalanceAnnotation远程请求:{}",url);
         //2. 给远程服务发送请求
         Product product = restTemplate.getForObject(url, Product.class);
 
