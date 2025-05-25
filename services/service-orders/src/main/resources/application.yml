@@ -14,3 +14,9 @@ expire_time: 333
 expire_time_unit: min
 server:
   port: 8000 #the web server port will be 8000
+
+logging:
+  level:
+    #    com.netflix.loadbalancer: DEBUG
+#    feign: DEBUG
+    com.morgan.order.feign: DEBUG # 把 com.morgan.order.feign 这个包下的所有类的日志级别调成 DEBUG
