@@ -1,6 +1,8 @@
 package com.morgan.order.controller;
 
 import com.morgan.order.config.ExpireField;
+import com.morgan.order.feign.PhoneFeignClient;
+import com.morgan.order.feign.WeatherFeignClient;
 import com.morgan.order.service.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -10,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import com.morgan.order.bean.Order;
 
@@ -31,6 +34,13 @@ public class OrderController {
     ExpireField expireField;
 
 
+    @Autowired
+    WeatherFeignClient weatherFeignClient;
+
+    @Autowired
+    PhoneFeignClient phoneFeignClient;
+
+
     @GetMapping("/create")
     @Operation(summary = "create order",description = "create order by calling remote product service")
     public com.morgan.order.bean.Order createOrder(@Parameter(description="商品id") @PathParam("prodId") Long prodId, @Parameter(description = "用户id")@PathParam("userId") Long userId){
@@ -47,4 +57,18 @@ public class OrderController {
         //测试发现，即使配合上 RefreshScope 和 ConfigurationProperties 注解，也还是没有实现自动刷新，
         return "expire time from expireField,"+expireField.getTime()+expireField.getTimeUnit();
     }
+
+
+    @GetMapping("/getWeather/{city}/{rspFmt}")
+    public String getWeatherByCity(@PathVariable(name = "city") String cityNm, @PathVariable(name = "rspFmt") int respFormat){
+        return weatherFeignClient.getWeatherByCity(cityNm,respFormat);
+    }
+
+
+    @GetMapping("/getPhone/{phoneNum}")
+    public String getPhoneNumLoc(@PathVariable(name = "phoneNum") String phoneNum){
+        System.out.println(phoneNum+"-----"+phoneFeignClient.getPhoneNumLoc(phoneNum));
+        return phoneFeignClient.getPhoneNumLoc(phoneNum);
+    }
+
 }
