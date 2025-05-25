@@ -1,9 +1,11 @@
 package com.morgan.order.controller;
 
 import com.morgan.order.config.ExpireField;
+import com.morgan.order.feign.CallProdServiceFeign;
 import com.morgan.order.feign.PhoneFeignClient;
 import com.morgan.order.feign.WeatherFeignClient;
 import com.morgan.order.service.OrderService;
+import com.morgan.product.bean.Product;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.websocket.server.PathParam;
@@ -40,6 +42,9 @@ public class OrderController {
     @Autowired
     PhoneFeignClient phoneFeignClient;
 
+    @Autowired
+    CallProdServiceFeign callProdServiceFeign;
+
 
     @GetMapping("/create")
     @Operation(summary = "create order",description = "create order by calling remote product service")
@@ -69,6 +74,12 @@ public class OrderController {
     public String getPhoneNumLoc(@PathVariable(name = "phoneNum") String phoneNum){
         System.out.println(phoneNum+"-----"+phoneFeignClient.getPhoneNumLoc(phoneNum));
         return phoneFeignClient.getPhoneNumLoc(phoneNum);
+    }
+
+    @GetMapping("/getProdByRemote/{prodId}")
+    @Operation(summary="调用远程Prod",description = "涉及到服务降级的一个测试demo")
+    public Product getProdByRemote(@PathVariable("prodId") Long productId){
+        return callProdServiceFeign.getProductById(productId);
     }
 
 }

@@ -9,6 +9,13 @@ spring:
           enabled: false #开启自动刷新
   config:
     import: nacos:morgan_nacos.properties #引入nacos配置中心的Data Id
+  openfeign:
+    circuitbreaker:
+      # 疑问，不知道为什么即使设置成false， FeignClient(name = "service-product",fallback = CallProdServiceFeignImpl.class) 服务降级还是生效了
+      enabled: false #启用或禁用 Feign 客户端的断路器功能 默认值：false，
+      group:
+        enabled: true #启用或禁用 Feign 客户端的断路器分组功能  默认值：false
+
 
 expire_time: 333
 expire_time_unit: min
@@ -17,6 +24,19 @@ server:
 
 logging:
   level:
+#    org:
+#      springframework:
+#        cloud:
+#          openfeign: DEBUG  #增加日志记录的详细级别，查看Spring Cloud在启动时的配置打印信息
+
     #    com.netflix.loadbalancer: DEBUG
-#    feign: DEBUG
+    #    feign: DEBUG
     com.morgan.order.feign: DEBUG # 把 com.morgan.order.feign 这个包下的所有类的日志级别调成 DEBUG
+
+#本项目里的openfeign 是4.1.4版本，已经移除掉了内置的hystrix，所以没法通过下面的设置来实现服务降级，需要引入其他的熔断器组件，比如sentinel
+feign:
+  hystrix:
+    enabled: true # 开启Feign的熔断功能
+  sentinel:
+    enabled: true # 引入 alibaba sentinel来实现熔断，需要引入sentinel依赖,配合 @FeignClient(name = "service-product",fallback = CallProdServiceFeignImpl.class) 可以实现服务降级
+

@@ -36,6 +36,14 @@
             <artifactId>spring-cloud-starter-loadbalancer</artifactId>
         </dependency>
 
+        <!-- 引入 alibaba sentinel 依赖 来实现熔断和服务降级，配合
+        @FeignClient(name = "service-product",fallback = CallProdServiceFeignImpl.class)
+        可以实现服务降级
+        -->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-sentinel</artifactId>
+        </dependency>
     </dependencies>
 
 </project>
