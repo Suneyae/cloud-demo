@@ -1,0 +1,15 @@
+spring:
+  redis:
+    host: localhost
+    port: 6379
+
+  application:
+    name: other-orders
+  cloud:
+    nacos:
+      server-addr: 127.0.0.1:8848
+      config:
+        nacos-config-refresher:
+          enabled: false #开启自动刷新
+  config:
+    import: nacos:morgan_nacos.properties #引入nacos配置中心的Data Id
