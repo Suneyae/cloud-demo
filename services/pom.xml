@@ -14,6 +14,7 @@
     <modules>
         <module>service-product</module>
         <module>service-orders</module>
+        <module>other-practice</module>
     </modules>
 
     <artifactId>services</artifactId>
