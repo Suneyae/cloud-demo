@@ -6,6 +6,8 @@
     <file url="file://$PROJECT_DIR$/service/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/service/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/services/model/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/services/mq-practice/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/services/other-practice/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/services/service-order/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/services/service-orders/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/services/service-prod/src/main/java" charset="UTF-8" />
