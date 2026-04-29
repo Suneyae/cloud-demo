@@ -20,6 +20,7 @@ public class RabbitMQConfig {
 
     // 1. 定义队列名称
     public static final String TEST_QUEUE_NAME = "test_queue";
+    public static final String TEST_QUEUE_NAME2 = "tmp_queue";
     // 2. 定义交换机名称
     public static final String TEST_EXCHANGE_NAME = "test_exchange";
     // 3. 定义路由键
@@ -29,6 +30,12 @@ public class RabbitMQConfig {
     @Bean
     public Queue testQueue() {
         return new Queue(TEST_QUEUE_NAME, true, false, false);
+    }
+
+    // 创建队列（持久化、非排他、非自动删除）
+    @Bean
+    public Queue testQueue2() {
+        return new Queue(TEST_QUEUE_NAME2, true, false, false);
     }
 
     // 创建直连交换机（持久化、非自动删除）

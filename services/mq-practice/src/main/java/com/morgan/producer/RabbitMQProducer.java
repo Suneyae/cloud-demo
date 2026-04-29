@@ -10,6 +10,7 @@ package com.morgan.producer;
  */
 
 import com.morgan.config.RabbitMQConfig;
+import com.morgan.util.ScheduledHttpRequest;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,6 +22,9 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 public class RabbitMQProducer {
+
+    @Autowired
+    private ScheduledHttpRequest scheduledHttpRequest;
 
     // 注入RabbitTemplate（Spring提供的RabbitMQ操作模板）
     @Autowired
@@ -41,6 +45,30 @@ public class RabbitMQProducer {
             );
             return "消息发送成功：" + msg;
         } catch (Exception e) {
+            return "消息发送失败：" + e.getMessage();
+        }
+    }
+
+
+    @GetMapping("/sendMsgs/{msg}")
+    public void sendMsgPer5Sec(@PathVariable String msg){
+        ScheduledHttpRequest.triggerRequestEvery5s();
+    }
+
+
+    @GetMapping("/sendMsgLong/{random}")
+    public String sendMsgPer5Sec(@PathVariable long random){
+        try {
+            // 发送消息：参数（交换机名称、路由键、消息内容）
+            rabbitTemplate.convertAndSend(
+                    RabbitMQConfig.TEST_EXCHANGE_NAME,
+                    RabbitMQConfig.TEST_ROUTING_KEY,
+                    random
+            );
+            System.out.println("发送消息成功,"+random);
+            return "消息发送成功：" + random;
+        } catch (Exception e) {
+            System.out.println("消息发送失败,"+random);
             return "消息发送失败：" + e.getMessage();
         }
     }
