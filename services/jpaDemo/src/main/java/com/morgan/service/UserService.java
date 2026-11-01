@@ -3,7 +3,10 @@ package com.morgan.service;
 import com.morgan.dto.UserQueryDTO;
 import com.morgan.entity.User;
 import com.morgan.repository.UserRepository;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -25,6 +28,39 @@ public class UserService {
      * 核心：动态拼接 Predicate
      */
     public Page<User> pageQuery(UserQueryDTO queryDTO) {
+        Specification<User> spec2 = new Specification<User>() {
+            @Override
+            public Predicate toPredicate(Root<User> root, CriteriaQuery<?> cq, CriteriaBuilder cb) {
+                List<Predicate> predicateList = new ArrayList<>();
+
+                // 1. name 模糊 like
+                if (StringUtils.hasText(queryDTO.getName())) {
+                    predicateList.add(
+                            cb.like(root.get("name"), cb.literal("%" + queryDTO.getName() + "%"))
+                    );
+                }
+                // 2. minAge >=
+                if (queryDTO.getMinAge() != null) {
+                    predicateList.add(cb.greaterThanOrEqualTo(root.get("age"), queryDTO.getMinAge()));
+                }
+                // 3. maxAge <=
+                if (queryDTO.getMaxAge() != null) {
+                    predicateList.add(cb.lessThanOrEqualTo(root.get("age"), queryDTO.getMaxAge()));
+                }
+                // 4. status in (...)
+                if (queryDTO.getStatusList() != null && !queryDTO.getStatusList().isEmpty()) {
+                    predicateList.add(root.get("status").in(queryDTO.getStatusList()));
+                }
+
+                // ✅ 没有条件返回 cb.conjunction() = true，查全部
+                if (predicateList.isEmpty()) {
+                    return cb.conjunction();
+                }
+                // 所有条件 AND
+                return cb.and(predicateList.toArray(new Predicate[0]));
+            }
+        };
+
         Specification<User> spec = (root, cq, cb) -> {
             List<Predicate> predicateList = new ArrayList<>();
 
@@ -57,7 +93,8 @@ public class UserService {
 
         // 分页 第0页，每页10条
         Pageable pageable = PageRequest.of(0, 10);
-        return userRepository.findAll(spec, pageable);
+//        return userRepository.findAll(spec, pageable);
+        return userRepository.findAll(spec2,pageable);
     }
 
     // 插入测试数据

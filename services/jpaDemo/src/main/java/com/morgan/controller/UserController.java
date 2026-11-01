@@ -1,5 +1,6 @@
 package com.morgan.controller;
 
+import com.morgan.annotation.RequireToken;
 import com.morgan.dto.UserQueryDTO;
 import com.morgan.entity.User;
 import com.morgan.service.UserService;
@@ -22,6 +23,7 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/page")
+    @RequireToken
     public Page<User> queryPage(@RequestBody UserQueryDTO dto) {
         return userService.pageQuery(dto);
     }

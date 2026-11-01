@@ -22,3 +22,5 @@ spring:
       hibernate:
         # 格式化SQL，方便阅读
         format_sql: true
+app:
+  token-check: true
