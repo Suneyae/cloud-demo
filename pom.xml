@@ -18,6 +18,7 @@
         <module>model</module>
         <module>services/mq-practice</module>
         <module>services/jpaDemo</module>
+        <module>services/base-learn</module>
     </modules>
 
 
