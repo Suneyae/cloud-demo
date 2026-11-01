@@ -1,0 +1,24 @@
+spring:
+  datasource:
+    # H2内存数据库，DB_CLOSE_DELAY=-1 防止连接关闭后内存库销毁，方便H2控制台调试
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1
+    # H2驱动类
+    driver-class-name: org.h2.Driver
+    # 数据库用户名
+    username: sa
+    # 密码为空，直接留空即可
+    password:
+  h2:
+    console:
+      # 开启H2网页控制台，访问地址：http://localhost:8080/h2-console
+      enabled: true
+  jpa:
+    hibernate:
+      # 自动根据实体更新表结构：update -> 有表就更新，无表新建，不会删除旧数据
+      ddl-auto: update
+    # 打印执行的SQL语句到控制台
+    show-sql: true
+    properties:
+      hibernate:
+        # 格式化SQL，方便阅读
+        format_sql: true
