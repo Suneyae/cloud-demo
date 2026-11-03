@@ -1,30 +1,52 @@
+# ==============================================
+# 工作流名称：Auto Merge release/sit → release/uat
+# 功能说明：当代码推送到 release/sit 分支时，自动创建/复用 PR，合并到 release/uat
+# 触发时机：
+#   1. 向 release/sit 分支 push 代码自动触发
+#   2. 支持在 Actions 页面手动点击运行（workflow_dispatch）
+# 前置条件（必须提前配置，否则会权限报错）：
+#   仓库 Settings → Actions → Workflow permissions
+#   ✅ 勾选 Read and write permissions
+#   ✅ 勾选 Allow GitHub Actions to create and approve pull requests
+# ==============================================
 name: Auto Merge release/sit → release/uat
 
 on:
+  # 推送代码到 release/sit 分支自动触发
   push:
     branches: [release/sit]
+  # 支持手动在 GitHub Actions 页面触发该工作流
   workflow_dispatch:
 
+# 权限声明：给内置 GITHUB_TOKEN 授予对应权限
 permissions:
-  contents: write
-  pull-requests: write
+  contents: write         # 仓库内容读写权限（git 相关）
+  pull-requests: write    # PR 的创建、修改、合并权限
 
 jobs:
   merge:
+    # 使用 Ubuntu 官方 runner，自带 git + gh（GitHub CLI），无需额外安装
     runs-on: ubuntu-latest
     steps:
+      # 步骤1：拉取仓库代码到 runner 本地
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # 步骤2：核心脚本 - 查询/新建PR + 冲突检测 + 执行合并
       - name: Create PR and merge to release/uat
         env:
+          # 使用 GitHub 内置 token（依赖上面仓库权限开关）
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # 先关闭全局set -e，自己控制错误
+          # set +e：关闭脚本遇到错误立刻退出（set -e），我们自己捕获命令返回码
+          # 原因：gh pr list 在没有找到PR时，退出码=1，直接set -e会导致脚本直接终止
           set +e
+          # 查询：head=源分支release/sit，base=目标分支release/uat，取第一个PR的url
           PR_URL=$(gh pr list --head release/sit --base release/uat --json url -q '.[0].url')
+          # 恢复默认：后续命令出错就直接退出
           set -e
 
+          # 判断：PR_URL为空 或者 返回null，代表不存在对应的PR，新建PR
           if [[ -z "$PR_URL" || "$PR_URL" == "null" ]]; then
             echo "✅ 没有找到PR，开始新建PR"
             PR_URL=$(gh pr create \
@@ -35,17 +57,22 @@ jobs:
           fi
           echo "PR_URL = $PR_URL"
 
+          # 获取PR合并状态：判断是否存在代码冲突
           STATE=$(gh pr view "$PR_URL" --json mergeable -q .mergeable)
           echo "mergeable state: $STATE"
 
+          # 如果状态为 CONFLICTING：存在合并冲突，输出错误标记，终止流程，人工处理
           if [ "$STATE" = "CONFLICTING" ]; then
             echo "::error::合并冲突，请人工处理: $PR_URL"
             exit 1
           fi
 
+          # 优先尝试开启仓库 Auto-merge（需要仓库提前开启Auto-merge功能）
+          # Auto-merge 含义：满足所有检查（CI、评审等）后自动合并
           if gh pr merge --auto --merge "$PR_URL"; then
             echo "✅ 已开启Auto merge，等待检查通过自动合并"
           else
+            # Auto-merge 不可用（仓库没开、缺少评审等），降级为直接合并PR
             echo "⚠️ --auto 失败，尝试直接合并"
             gh pr merge --merge "$PR_URL"
           fi
