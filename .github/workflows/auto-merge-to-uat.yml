@@ -13,19 +13,16 @@ jobs:
   merge:
     runs-on: ubuntu-latest
     steps:
-      # 1. 拉取仓库代码，解决 not a git repository 报错
+      # 拉取代码，解决 not a git repository
       - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: Setup GitHub CLI
-        uses: cli/setup-gh@v1
 
       - name: Create PR and merge to release/uat
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -e
-          # 先查询是否已经存在 sit -> uat 的PR
+          # 查询是否已有 sit -> uat 的PR
           PR_INFO=$(gh pr list --head release/sit --base release/uat --json url,number -q '.[0]')
           PR_URL=$(echo "$PR_INFO" | jq -r .url)
 
@@ -39,7 +36,7 @@ jobs:
           fi
           echo "PR: $PR_URL"
 
-          # ✅ 用PR_URL查询，不再传分支名！
+          # 使用PR_URL查询状态，不再传分支名
           STATE=$(gh pr view "$PR_URL" --json mergeable -q .mergeable)
           echo "mergeable state: $STATE"
 
@@ -48,7 +45,7 @@ jobs:
             exit 1
           fi
 
-          # 尝试开启auto merge，失败则直接合并
+          # 优先开启auto merge，失败降级直接合并
           if gh pr merge --auto --merge "$PR_URL"; then
             echo "✅ 已开启Auto merge，等待检查通过自动合并"
           else
