@@ -23,4 +23,11 @@ public class UserRegisterController {
         return "ok";
 
     }
+
+    @GetMapping("/registerVip")
+    public String registerVipInfo(@RequestParam String userName, @RequestParam boolean vip){
+        registerService.registerVip(userName,vip);
+        return "ok";
+
+    }
 }
