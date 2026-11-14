@@ -1,6 +1,11 @@
 package com.morgan.event;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.context.ApplicationEvent;
+
+import java.math.BigDecimal;
 
 /**
  * ClassName: OrderCreateEvent
@@ -10,16 +15,10 @@ import org.springframework.context.ApplicationEvent;
  * @create 2026-11-13-17:53
  * @Description:
  */
-public class OrderCreateEvent extends ApplicationEvent {
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class OrderCreateEvent {
     String orderName;
-
-    public String getOrderName() {
-        return orderName;
-    }
-
-    public OrderCreateEvent(Object source,String orderName) {
-        super(source);
-        this.orderName = orderName;
-    }
-
+    BigDecimal orderAmount;
 }

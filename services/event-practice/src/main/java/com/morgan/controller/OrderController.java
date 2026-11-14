@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigDecimal;
+
 /**
  * ClassName: OrderController
  * Package: com.morgan.controller
@@ -20,18 +22,13 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 public class OrderController {
-
-//    @Autowired
-//    ApplicationEventPublisher publisher;
-
+    
     @Autowired
     OrderService orderService;
 
     @PostMapping("/createOrder")
-    public String createOrder(@RequestParam String orderName){
-        orderService.order(orderName);
-//        publisher.publishEvent(new OrderCreateEvent(this,orderName));
-
+    public String createOrder(@RequestParam String orderName, @RequestParam BigDecimal orderAmount){
+        orderService.order(orderName,orderAmount);
         return "created Order ok";
     }
 

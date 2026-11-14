@@ -3,6 +3,8 @@ package com.morgan.listener;
 import com.morgan.event.OrderCreateEvent;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.EventListener;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 /**
@@ -14,21 +16,20 @@ import org.springframework.stereotype.Component;
  * @Description:
  */
 @Component
-public class OrderLister implements ApplicationListener<OrderCreateEvent> {
+public class OrderLister{
 
-    @Override
-    public void onApplicationEvent(OrderCreateEvent event) {
-//        if(event instanceof OrderCreateEvent){
-//            OrderCreateEvent orderCreateEvent = (OrderCreateEvent)event;
-//            String orderNm = orderCreateEvent.getOrderName();
-//            System.out.println("onApplicationEvent created "+orderNm);
-//        }
-        String orderNm = event.getOrderName();
-        System.out.println("监听到order "+orderNm);
+    //listen the event
+    @Order(1)
+    @EventListener
+    public void listenOrder(OrderCreateEvent event){
+        System.out.println("orderListener:"+event.getOrderName()+",amount:"+event.getOrderAmount());
     }
 
-    @Override
-    public boolean supportsAsyncExecution() {
-        return ApplicationListener.super.supportsAsyncExecution();
+    @Order(2)
+    @EventListener(condition = "#event.orderAmount>100")
+    public void listenOrder2(OrderCreateEvent event){
+        System.out.println("orderListener2, amount>100:"+event.getOrderName()+",amount:"+event.getOrderAmount());
     }
+
+
 }
