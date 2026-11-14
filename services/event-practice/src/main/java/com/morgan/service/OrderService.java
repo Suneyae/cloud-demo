@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+
 /**
  * ClassName: OrderService
  * Package: com.morgan.service
@@ -17,8 +19,8 @@ import org.springframework.stereotype.Service;
 public class OrderService {
     @Autowired
     ApplicationEventPublisher publisher;
-    public void order(String orderName){
-        publisher.publishEvent(new OrderCreateEvent(this,orderName));
+    public void order(String orderName, BigDecimal orderAmount){
+        publisher.publishEvent(new OrderCreateEvent(orderName,orderAmount));
         System.out.println("order crated in service logic");
     }
 }
