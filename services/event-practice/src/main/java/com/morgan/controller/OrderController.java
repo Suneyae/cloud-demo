@@ -32,8 +32,8 @@ public class OrderController {
         return "created Order ok";
     }
 
-    @PostMapping("/createOrderTxn")
-    public String createOrderTxn(@RequestParam String orderName, @RequestParam BigDecimal orderAmount, @RequestParam boolean throwErr){
+    @PostMapping("/createOrderTxn/{orderName}")
+    public String createOrderTxn(@PathVariable String orderName, @RequestParam BigDecimal orderAmount, @RequestParam boolean throwErr){
         orderService.orderTxn(orderName,orderAmount,throwErr);
         return "created Order ok";
     }
