@@ -23,7 +23,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
  */
 
 @Component
-@Aspect
+//@Aspect
 public class TokenAspect {
     private static final String VALID_TOKEN = "validToken-2026";
 
