@@ -18,4 +18,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface RequireToken {
 
+    //增加属性，演示切面读取注解属性
+    boolean needAdmin() default false;
 }
